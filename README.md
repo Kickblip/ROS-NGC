@@ -84,6 +84,10 @@ alias melodic='source /opt/ros/melodic/setup.bash'
 alias eloquent='source /opt/ros/eloquent/setup.bash'
 alias bridge='source ~/ros1_bridge/install/setup.bash'
 ```
+Reload `.bashrc`
+```bash
+source ~/.bashrc
+```
 Now you can source a ros workspace by simply typing
 ```bash
 melodic
