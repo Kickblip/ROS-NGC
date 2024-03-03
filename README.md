@@ -270,6 +270,12 @@ And update `package.xml` in the same directory
 </export>
 ```
 
+Now build your `colcon_ws` by running the following commands from the workspace root
+```bash
+eloquent
+colcon build
+```
+
 #### 5.3.3 Build `ros1_bridge`
 Open a new terminal with no workspaces sourced and run the following commands. **NOTE:** The final build may take a few minutes.
 ```bash
@@ -279,6 +285,12 @@ source catkin_ws/devel/setup.bash
 source colcon_ws/install/setup.bash
 cd bridge_ws
 colcon build --symlink-install --cmake-force-configure
+```
+
+#### 5.3.4 Run the bridge
+```bash
+source install/setup.bash
+ros2 run ros1_bridge dynamic_bridge --print-pairs | grep -i custom
 ```
 
 
