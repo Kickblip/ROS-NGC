@@ -217,6 +217,8 @@ float64 custom_value
 #### 5.2.4 Update CMakeLists
 Add the following lines underneath the existing 'find dependencies' header in `CMakeLists.txt`
 ```bash
++ find_package(rosidl_default_generators REQUIRED)
+
 + rosidl_generate_interfaces(${PROJECT_NAME}
 +   "msg/CustomMessage.msg"
 + )
@@ -247,18 +249,18 @@ git clone https://github.com/ros2/ros1_bridge.git
 ```
 
 #### 5.3.2 Define message mappings
-For this guide, the goal is to get our `custom_msg_ros1` and `custom_msg_ros2` packages communicating. Since they have different names, we will need to define a mapping to tell `ros1_bridge` how to handle these messages. This mapping will be a YAML file that is put **IN THE ROOT OF YOUR ROS 2 WORKSPACE**
+For this guide, the goal is to get our `custom_msg_ros1` and `custom_msg_ros2` packages communicating. Since they have different names, we will need to define a mapping to tell `ros1_bridge` how to handle these messages. This mapping will be a YAML file that is put **IN YOUR ROS 2 PACKAGE**
 
 This guide only touches on simple package mappings, for more complex mappings refer to the [ros1_bridge package documentation](https://github.com/ros2/ros1_bridge/blob/master/doc/index.rst)
 
-**Create and edit** the following file `my_bridge_mapping.yaml` in the root of `colcon_ws`
+**Create and edit** the following file `my_bridge_mapping.yaml` in the root of `colcon_ws/src/custom_msg_ros2`
 ```yaml
 -
   ros1_package_name: 'custom_msg_ros1'
   ros2_package_name: 'custom_msg_ros2'
 ```
 
-You will also have to update the `CMakeLists.txt` file in your `colcon_ws` to reflect these changes
+You will also have to update `CMakeLists.txt` to reflect these changes
 ```bash
 + install(
 +   FILES my_bridge_mapping.yaml
