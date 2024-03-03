@@ -93,4 +93,196 @@ Now you can source a ROS workspace by simply typing
 melodic
 ```
 
-## 5. Building ros1_bridge
+## 5. Bridging ROS 1 and ROS 2 Messages
+
+### 5.1 Defining messages for ROS 1
+To define what messages will be bridged from ROS 1 to ROS 2, we need to create a package in our ROS 1 and ROS 2 workspaces (~/catkin_ws and ~/colcon_ws)
+**IMPORTANT**: Make sure you only have one workspace sourced at a time while doing this. For example, when creating the ROS 1 bridge package, do not have ROS eloquent sourced.
+
+#### 5.1.1 Create ROS 1 bridge package
+```bash
+cd ~/catkin_ws/src
+melodic
+catkin_create_pkg custom_msg_ros1 rospy std_msgs
+```
+
+#### 5.1.2 Add message definitions
+```bash
+cd custom_msg_ros1
+mkdir msg
+touch CustomMessage.msg
+```
+
+#### 5.1.3 Placeholder value in message definition
+Add the following line to your new CustomMessage.msg file as a placeholder.
+```bash
+float64 custom_value
+```
+
+#### 5.1.4 Update CMakeLists
+Add the following line to your CMakeLists.txt file in the `custom_msg_ros1` package root (**WITHOUT** the '+').
+```bash
+find_package(catkin REQUIRED COMPONENTS
+  rospy
+  std_msgs
++ message_generation
+)
+```
+Then uncomment and edit these lines.
+```bash
+add_message_files(
+  FILES
++ CustomMessage.msg
+)
+```
+```bash
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+```
+
+#### 5.1.5 Update Package.xml
+Add the following dependency declarations to your Package.xml file.
+```xml
+<build_depend>message_generation</build_depend>
+<exec_depend>message_runtime</exec_depend>
+```
+
+#### 5.1.6 Build workspace
+To make sure everything is working properly, run the following command from the **root** of your ROS 1 workspace `~/catkin_ws`.
+```bash
+catkin_make
+```
+Then test your message.
+```bash
+source devel/setup.bash
+rosmsg info custom_msg_ros1/CustomMessage
+```
+If you see `float64 custom_value` then you are free to continue.
+
+#### 5.1.7 Create talker node for testing
+Create the file `talker.py` using the publisher node example from the [ROS 1 Tutorials](http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber%28python%29). Add this node under `/src` in `custom_msg_ros1`.
+```python
+#!/usr/bin/env python
+# license removed for brevity
+import rospy
+from custom_msg_ros1.msg import CustomMessage
+
+def talker():
+    pub = rospy.Publisher('chatter', CustomMessage, queue_size=10)
+    rospy.init_node('talker', anonymous=True)
+    rate = rospy.Rate(10) # 10hz
+    while not rospy.is_shutdown():
+        msg = CustomMessage()
+        msg.custom_value = 1.22
+        pub.publish(msg)
+        rate.sleep()
+
+if __name__ == '__main__':
+    try:
+        talker()
+    except rospy.ROSInterruptException:
+        pass
+```
+
+Declare the new node in `CMakeLists.txt` so Catkin knows to build it
+```bash
+catkin_install_python(PROGRAMS
++ src/talker.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+```
+
+### 5.2 Defining messages for ROS 2
+Now we will repeat 5.1 for ROS 2.
+
+#### 5.2.1 Create ROS 2 package
+Open a new terminal (**WITHOUT** a ROS workspace sourced) and navigate to your ROS 2 workspace `~/colcon_ws`. 
+```bash
+cd colcon_ws/src
+eloquent
+ros2 pkg create --build-type ament_cmake custom_msg_ros2 --dependencies rclcpp
+```
+
+#### 5.2.2 Add message definitions
+```bash
+cd custom_msg_ros1
+mkdir msg
+touch CustomMessage.msg
+```
+
+#### 5.2.3 Placeholder value in message definition
+Add the following line to your new CustomMessage.msg file as a placeholder.
+```bash
+float64 custom_value
+```
+
+#### 5.2.4 Update CMakeLists
+```bash
++ rosidl_generate_interfaces(${PROJECT_NAME}
++   "msgs/CustomMessage.msg"
++ )
+```
+
+#### 5.2.5 Update Package.xml
+```xml
+<build_depend>rosidl_default_generators</build_depend>
+<exec_depend>rosidl_default_runtime</exec_depend>
+<member_of_group>rosidl_interface_packages</member_of_group>
+```
+
+# TODO: ADD 5.2.6 TALKER AND LISTENER NODES
+
+### 5.3 Building the `ros1_bridge` package
+At this point, we should have two packages for ROS 1 and ROS 2 that have custom messages defined. In order for them to communicate across ROS versions, we will build the [ros1_bridge package](https://github.com/ros2/ros1_bridge) from source and start using it.
+
+#### 5.3.1 Cloning repository
+Run the following from your bridge workspace's source folder `~/bridge_ws/src`.
+```bash
+git clone https://github.com/ros2/ros1_bridge.git
+```
+
+#### 5.3.2 Define message mappings
+For this guide, the goal is to get our `custom_msg_ros1` and `custom_msg_ros2` packages communicating. Since they have different names, we will need to define a mapping to tell `ros1_bridge` how to handle these messages. This mapping will be a YAML file that is put **IN THE ROOT OF YOUR ROS 2 WORKSPACE**
+
+This guide only touches on simple package mappings, for more complex mappings refer to the [ros1_bridge package documentation](https://github.com/ros2/ros1_bridge/blob/master/doc/index.rst)
+
+**Create and edit** the following file `my_bridge_mapping.yaml` in the root of `colcon_ws`
+```yaml
+-
+  ros1_package_name: 'custom_msg_ros1'
+  ros2_package_name: 'custom_msg_ros2'
+```
+
+You will also have to update the `CMakeLists.txt` file in your `colcon_ws` to reflect these changes
+```bash
++ install(
++   FILES my_bridge_mapping.yaml
++   DESTINATION share/${PROJECT_NAME})
+```
+
+And update `package.xml` in the same directory
+```xml
+<export>
+  <build_type>ament_cmake</build_type>
++ <ros1_bridge mapping_rules="my_bridge_mapping.yaml" />
+</export>
+```
+
+#### 5.3.3 Build `ros1_bridge`
+Open a new terminal with no workspaces sourced and run the following commands. **NOTE:** The final build may take a few minutes.
+```bash
+melodic
+eloquent
+source catkin_ws/devel/setup.bash
+source colcon_ws/install/setup.bash
+cd bridge_ws
+colcon build --symlink-install --cmake-force-configure
+```
+
+
+
+
+
+
