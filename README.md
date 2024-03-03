@@ -88,7 +88,7 @@ Reload `.bashrc`
 ```bash
 source ~/.bashrc
 ```
-Now you can source a ros workspace by simply typing
+Now you can source a ROS workspace by simply typing
 ```bash
 melodic
 ```
