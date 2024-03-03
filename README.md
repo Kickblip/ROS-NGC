@@ -1,10 +1,6 @@
 # Installation and Setup Guide
 This guide lays out the steps to get ROS 1 and ROS 2 communicating on a fresh Ubuntu 18.04 (Bionic Beaver) install.  This is **NOT** a guide on how to get the NGC package working on your machine.
 
-## Upgrading CMake 3.10 to 3.12
-Ubuntu 18.04 will have CMake 3.10 installed by default but in order to build `ros1_bridge` later, we'll need to upgrade to 3.12
-
-
 ## 1. Installing ROS Melodic (ROS 1)
 Instructions from the [ROS Wiki Melodic Installation Guide](http://wiki.ros.org/melodic/Installation/Ubuntu)
 
@@ -110,7 +106,7 @@ catkin_create_pkg custom_msg_ros1 rospy std_msgs
 ```bash
 cd custom_msg_ros1
 mkdir msg
-touch CustomMessage.msg
+touch msg/CustomMessage.msg
 ```
 
 #### 5.1.3 Placeholder value in message definition
@@ -207,9 +203,9 @@ ros2 pkg create --build-type ament_cmake custom_msg_ros2 --dependencies rclcpp
 
 #### 5.2.2 Add message definitions
 ```bash
-cd custom_msg_ros1
+cd custom_msg_ros2
 mkdir msg
-touch CustomMessage.msg
+touch msg/CustomMessage.msg
 ```
 
 #### 5.2.3 Placeholder value in message definition
@@ -219,9 +215,10 @@ float64 custom_value
 ```
 
 #### 5.2.4 Update CMakeLists
+Add the following lines underneath the existing 'find dependencies' header in `CMakeLists.txt`
 ```bash
 + rosidl_generate_interfaces(${PROJECT_NAME}
-+   "msgs/CustomMessage.msg"
++   "msg/CustomMessage.msg"
 + )
 ```
 
@@ -230,6 +227,12 @@ float64 custom_value
 <build_depend>rosidl_default_generators</build_depend>
 <exec_depend>rosidl_default_runtime</exec_depend>
 <member_of_group>rosidl_interface_packages</member_of_group>
+```
+
+#### 5.2.6 Build package
+Run the build command from the root of your workspace `colcon_ws`
+```bash
+colcon build
 ```
 
 # TODO: ADD 5.2.6 TALKER AND LISTENER NODES
