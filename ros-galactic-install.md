@@ -41,3 +41,8 @@ add the drivers package to the /src directory
 git clone https://github.com/Interbotix/interbotix_xs_driver.git
 ```
 
+add the interbotix_ros_rover package /src directory
+```bash
+git clone -b galactic https://github.com/Interbotix/interbotix_ros_rovers.git
+```
+
