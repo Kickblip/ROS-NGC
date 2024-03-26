@@ -54,10 +54,15 @@ alias galactic='source /opt/ros/galactic/setup.bash'
 ```bash
 source ~/.bashrc
 ```
+Now you can source your ROS environment in a new terminal by simply typing
+```bash
+galactic
+```
+## Installing `interbotix_ros_rovers` Package Dependencies
 
+# TODO: SETUP COLCON WORKSPACE
 
-
-install interbotix_ros_toolboxes package
+1. Install `interbotix_ros_toolboxes` package
 run from `colcon_ws/src`
 ```bash
 git clone -b galactic https://github.com/Interbotix/interbotix_ros_toolboxes.git
