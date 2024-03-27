@@ -58,11 +58,17 @@ Now you can source your ROS environment in a new terminal by simply typing.
 ```bash
 galactic
 ```
-11. Now we will install Colcon (the ROS 2 build tool).
+11. Install and initialize Rosdep
+```bash
+sudo apt install python-rosdep
+sudo rosdep init
+rosdep update
+```
+12. Now we will install Colcon (the ROS 2 build tool).
 ```bash
 sudo apt install python3-colcon-common-extensions
 ```
-12. And finally, we will initialize our Colcon workspace.
+13. And finally, we will initialize our Colcon workspace.
 ```bash
 mkdir -p ~/colcon_ws/src
 ```
@@ -108,6 +114,7 @@ git clone https://github.com/Interbotix/interbotix_xs_driver.git
 7. Now build your workspace from `~/colcon_ws` (the root of your workspace) to make sure everything is working.
 ```bash
 galactic
+rosdep update
 rosdep install --from-paths src --ignore-src -r -y --rosdistro=galactic
 colcon build
 ```
