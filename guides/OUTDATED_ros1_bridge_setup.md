@@ -1,4 +1,5 @@
-# Installation and Setup Guide
+# OUTDATED: NOT USEFUL
+
 This guide lays out the steps to get ROS 1 and ROS 2 communicating on a fresh Ubuntu 18.04 (Bionic Beaver) install.  This is **NOT** a guide on how to get the NGC package working on your machine.
 
 ## 1. Installing ROS Melodic (ROS 1)
