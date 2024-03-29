@@ -2,7 +2,7 @@
 This guide covers the steps necessary to install and build the `interbotix_ros_rovers` package to start developing on the LoCoBot. This guide is made for ROS 2 Galactic running on Ubuntu 20.04 (Focal).
 
 ## Installing ROS 2 Galactic
-These steps are copied from the [official Galactic installation](https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html)
+The following ROS installation steps are from the [Official Galactic Installation Guide.](https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html) Refer there for more detail.
 
 1. Verify locale settings (mainly for minimal environments like a Docker container).
 ```bash
@@ -46,9 +46,10 @@ sudo apt install ros-galactic-desktop
 cd
 nano ~/.bashrc
 ```
-9. Add the following line to the bottom of the file.
+9. Add the following lines to the bottom of the file.
 ```bash
 alias galactic='source /opt/ros/galactic/setup.bash'
+export INTERBOTIX_XSLOCOBOT_BASE_TYPE=create3
 ```
 10. Restart your `.bashrc` to reflect these changes.
 ```bash
@@ -133,3 +134,31 @@ rm -rf install build
 colcon build
 ```
 
+## Installing Even More Dependencies
+1. Since our LoCoBot is using a Create3 base, we're going to need some packages from the `create3_sim` repo to simulate it in Gazebo. Clone the following repository **somewhere other than your Colcon workspace directory (for example, your desktop)**.
+```bash
+git clone -b galactic https://github.com/iRobotEducation/create3_sim.git
+```
+2. From this new directory, drag the `irobot_create_common` and `irobot_create_gazebo` packages into your `~/colcon_ws/src` directory.
+3. Now, staying in your `~/colcon_ws/src` directory, clone the following packages.
+```bash
+git clone -b galactic https://github.com/iRobotEducation/irobot_create_msgs.git
+git clone https://github.com/Slamtec/sllidar_ros2.git
+```
+4. Now we will install some missing dependencies from the ROS package manager. Similar to before, these were the ones I had to install, I'm not sure if it will be the same for every device. These also don't seem to be picked up by `rosdep update` for whatever reason.
+```bash
+sudo apt install ros-galactic-gazebo-ros2-control ros-galactic-rtabmap-ros ros-galactic-joint-state-publisher ros-galactic-joint-state-publisher-gui ros-galactic-nav2-bringup ros-galactic-rplidar-ros ros-galactic-realsense2-camera ros-galactic-moveit
+```
+5. Now run Rosdep to check for more missing dependencies. If it says there are missing dependencies, try installing them from the ROS package manager (like above) or searching for them on GitHub. Run the following command from `~/colcon_ws` not `~/colcon_ws/src`
+```bash
+rosdep install --from-paths src --ignore-src -r -y --rosdistro=galactic
+```
+6. If there are no missing dependencies, try to build your workspace.
+```bash
+colcon build
+```
+If you are getting errors regarding missing paths, try deleting the `install` and `build` directories from your workspace and rebuilding.
+```bash
+rm -rf install build
+colcon build
+```
