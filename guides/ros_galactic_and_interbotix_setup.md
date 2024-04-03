@@ -158,7 +158,38 @@ rosdep install --from-paths src --ignore-src -r -y --rosdistro=galactic
 colcon build
 ```
 If you are getting errors regarding missing paths, try deleting the `install` and `build` directories from your workspace and rebuilding.
+
 ```bash
 rm -rf install build
 colcon build
 ```
+
+## Launching Gazebo Simulation
+
+1. First, we need to make sure that the Gazebo environment is being ran on every new terminal window. Open your `.bashrc` file with a text editor.
+```bash
+cd
+nano ~/.bashrc
+```
+2. Add the following line to the bottom of the file.
+```bash
+. /usr/share/gazebo/setup.sh
+```
+3. Restart your `.bashrc` to reflect these changes.
+```bash
+source ~/.bashrc
+```
+4. Now you can either launch Gazebo and Moveit simultaneously using this command:
+```bash
+ros2 launch interbotix_xslocobot_moveit xslocobot_moveit.launch.py robot_model:=locobot_wx200 use_lidar:=true hardware_type:=gz_classic
+```
+Or you can just run Gazebo without a Moveit instance.
+```bash
+ros2 launch interbotix_xslocobot_sim xslocobot_gz_classic.launch.py robot_model:=locobot_wx200
+```
+
+I've found that as a general rule, if you're having trouble with Gazebo, the first thing you should try is to kill all client and server instances. If Gazebo is not opening for you, try running the following command.
+```bash
+killall gzserver gzclient
+```
+
