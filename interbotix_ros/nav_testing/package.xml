@@ -4,17 +4,29 @@
   <name>nav_testing</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="wyatt.zilker@gmail.com">kickball</maintainer>
+  <maintainer email="example@gmail.com">kickball</maintainer>
   <license>TODO: License declaration</license>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>example_interfaces</depend>
+  <depend>interbotix_xs_sdk</depend>
+  <depend>interbotix_common_modules</depend>
+  <depend>interbotix_xs_modules</depend>
+  <depend>interbotix_xslocobot_descriptions</depend>
+  <depend>irobot_create_msgs</depend>
+  <depend>irobot_create_control</depend>
+  <depend>interbotix_tf_tools</depend>
+  <depend>realsense2_camera</depend>
+  <depend>rplidar_ros</depend>
+  <depend>sllidar_ros2</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
   <test_depend>python3-pytest</test_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_python</build_type>
